@@ -42,8 +42,10 @@ No account, no setup, no internet. Nothing leaves the device.
 - **Pick your allowlist** from every app on the phone. Everything else goes quiet for the session.
 - **Blocks on sight** — open something off the list and a full-screen card appears instead, showing
   the time remaining and a shortcut back to the apps you *are* allowed.
-- **Hard to quit by accident.** Ending early takes a deliberate press-and-hold plus a confirmation,
-  and the back button won't dismiss the block.
+- **One press to back out.** Press Back once and you leave the blocked app entirely — it closes
+  rather than lingering in Recents with a preview of what you were avoiding.
+- **Hard to quit by accident.** Ending the whole session early takes a deliberate press-and-hold
+  plus a confirmation.
 - **Never locks you out.** Your launcher, Settings and keyboard always keep working.
 - **Keeps time honestly.** The countdown survives leaving the app, locking the screen, or the app
   being closed entirely.

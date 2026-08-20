@@ -36,6 +36,19 @@ private const val SHOW_SETTLE_MS = 1000L
 private const val DOCK_SLOTS = 4
 
 /**
+ * Let the overlay window actually relinquish input focus before injecting Back. Removing a
+ * window and recomputing focus is asynchronous inside WindowManager, and a Back injected too
+ * early is delivered straight back to the window we just took down.
+ */
+private const val FOCUS_RELEASE_MS = 60L
+
+/** How long to give the injected Back to actually move us off the blocked app. */
+private const val BACK_SETTLE_MS = 600L
+
+/** Upper bound on an in-flight exit; blocking resumes unconditionally once it lapses. */
+private const val EXIT_GRACE_MS = 2000L
+
+/**
  * Detects foreground-app switches via [TYPE_WINDOW_STATE_CHANGED][AccessibilityEvent] and blocks
  * non-allowlisted apps during a strict session with a [TYPE_ACCESSIBILITY_OVERLAY] window - no
  * `PACKAGE_USAGE_STATS` or `SYSTEM_ALERT_WINDOW` permission needed. `canRetrieveWindowContent` is
@@ -83,6 +96,12 @@ class FocusAccessibilityService : AccessibilityService() {
 
     /** When the overlay currently on screen went up; drives the [isNoise] settle window. */
     private var lastShowAtMs = 0L
+
+    /**
+     * Non-zero while a user-initiated exit ([leaveBlockedApp]) is in flight. Cleared the moment
+     * an allowed app reaches the foreground, which is what "the exit landed" actually means.
+     */
+    private var exitingUntilMs = 0L
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -148,7 +167,19 @@ class FocusAccessibilityService : AccessibilityService() {
 
     private fun evaluate(packageName: String) {
         val now = SystemClock.elapsedRealtime()
-        if (isBlocked(packageName, now)) showOverlay(packageName) else hideOverlay()
+
+        if (!isBlocked(packageName, now)) {
+            // Landing on an allowed app is the only real proof an in-flight exit succeeded.
+            exitingUntilMs = 0L
+            hideOverlay()
+            return
+        }
+
+        // Still on a blocked app. While an exit is in flight, hold off re-showing: the overlay
+        // would reclaim input focus and swallow the very Back we are trying to inject.
+        if (now < exitingUntilMs) return
+
+        showOverlay(packageName)
     }
 
     private fun showOverlay(blockedPackage: String) {
@@ -162,7 +193,10 @@ class FocusAccessibilityService : AccessibilityService() {
 
         // Same token BlockedOverlayContent fills itself with, read non-composably so the window
         // is opaque from frame one rather than from first composition.
-        overlayController.show(backgroundColor = OrganicDesignSystem.colors.lockedSurface.argb.toInt()) {
+        overlayController.show(
+            backgroundColor = OrganicDesignSystem.colors.lockedSurface.argb.toInt(),
+            onBack = ::leaveBlockedApp,
+        ) {
             val tick = overlayNowState.longValue
             BlockedOverlayContent(
                 blockedAppLabel = blockedLabel,
@@ -192,6 +226,32 @@ class FocusAccessibilityService : AccessibilityService() {
         tickerJob?.cancel()
         tickerJob = null
         overlayController.hide()
+    }
+
+    /**
+     * One Back press leaves the blocked app for good.
+     *
+     * Back is injected rather than merely dismissing the overlay, because dismissing alone would
+     * drop the user straight back into the blocked app - which is still foreground, and would be
+     * re-blocked on its next window event. It is also the reason Back is preferred over Home:
+     * a real Back finishes the blocked activity, so its task stops appearing in Recents with a
+     * live preview of its content. Home would leave that thumbnail behind.
+     *
+     * If Back doesn't get us out within [BACK_SETTLE_MS] - a deep back stack, or an app that
+     * swallows it - Home is the guaranteed fallback.
+     */
+    private fun leaveBlockedApp() {
+        exitingUntilMs = SystemClock.elapsedRealtime() + EXIT_GRACE_MS
+        hideOverlay()
+        foregroundPackage = null
+
+        serviceScope.launch {
+            delay(FOCUS_RELEASE_MS)
+            performGlobalAction(GLOBAL_ACTION_BACK)
+            delay(BACK_SETTLE_MS)
+            // Still set means no allowed app ever reached the foreground: Back wasn't enough.
+            if (exitingUntilMs != 0L) performGlobalAction(GLOBAL_ACTION_HOME)
+        }
     }
 
     private fun returnToApp() {

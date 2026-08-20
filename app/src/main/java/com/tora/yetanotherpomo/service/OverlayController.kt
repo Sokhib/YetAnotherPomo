@@ -18,6 +18,7 @@ private const val TAG = "OverlayController"
  */
 private class BackAwareComposeView(
     context: Context,
+    private val onBack: () -> Unit,
     private val content: @Composable () -> Unit,
 ) : AbstractComposeView(context) {
     init {
@@ -33,8 +34,16 @@ private class BackAwareComposeView(
         content()
     }
 
+    /**
+     * Back is claimed by the overlay rather than passed down: the blocked app must never see
+     * either half of the gesture. Both edges are consumed so the app can't act on the stray
+     * ACTION_UP, and [onBack] fires once, on release, the way a real Back press behaves.
+     */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.keyCode == KeyEvent.KEYCODE_BACK) return true
+        if (event.keyCode == KeyEvent.KEYCODE_BACK) {
+            if (event.action == KeyEvent.ACTION_UP) onBack()
+            return true
+        }
         return super.dispatchKeyEvent(event)
     }
 }
@@ -55,16 +64,17 @@ class OverlayController(private val context: Context) {
     val isShowing: Boolean get() = view != null
 
     /**
+     * @param onBack invoked once per Back press while the overlay is up.
      * @param backgroundColor painted by the [android.view.View] layer itself, so the very first
      * frame after `addView` is already opaque. Without it the window is transparent until the
      * first composition has measured and drawn, and the blocked app shows through for a frame or
      * two - the visible "blink" before the block lands. Must match the content's own background.
      */
-    fun show(backgroundColor: Int, content: @Composable () -> Unit) {
+    fun show(backgroundColor: Int, onBack: () -> Unit, content: @Composable () -> Unit) {
         if (isShowing) return
 
         val newOwner = OverlayLifecycleOwner()
-        val newView = BackAwareComposeView(context, content)
+        val newView = BackAwareComposeView(context, onBack, content)
         newView.setBackgroundColor(backgroundColor)
 
         newOwner.create()
