@@ -14,22 +14,24 @@ all**, so nothing it observes could leave the device even if it wanted to.
 
 ## Screens
 
-Five surfaces. Four live inside the app; the fifth is drawn by the accessibility service on top of
-whatever you just tried to open.
+| Home | Settings | Locked |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/home.jpg" alt="Home screen with a circular duration dial set to 15 minutes" width="260"> | <img src="docs/screenshots/settings.jpg" alt="Settings screen showing defaults and the four lock toggles" width="260"> | <img src="docs/screenshots/locked.jpg" alt="Locked screen counting down from 14:59 on a near-black background" width="260"> |
+| Set the time, glance at what's still allowed, begin. | Defaults up top, the four lock behaviours below. | Takes over the whole app for the duration. |
+
+Five surfaces in all. Four live inside the app; the fifth is drawn by the accessibility service on
+top of whatever you just tried to open.
 
 | Screen | What you're looking at |
 |---|---|
-| **Home** | Warm sand background, the app name, and a hamburger into Settings. Centre stage is a **circular dial** you drag to set the duration, with `15 / 25 / 50 min` preset pills beneath it. Along the bottom, a dock preview of your allowed apps (tap it to edit) and a full-width **"Begin 25 minutes"** button. If the accessibility service isn't enabled yet, a peach banner sits under the header explaining why it's needed, with a **Grant access** button that deep-links straight into system Accessibility settings. |
+| **Home** | Warm sand background, the app name, and a hamburger into Settings. Centre stage is a **circular dial** you drag to set the duration, with `15 / 25 / 50 min` preset pills beneath it. Along the bottom, a **Still allowed** dock preview (tap it to edit) and a full-width **"Begin *n* minutes"** button that names the duration you've dialled in. If the accessibility service isn't enabled yet, a peach banner sits under the header explaining why it's needed, with a **Grant access** button that deep-links straight into system Accessibility settings. |
 | **Allowed apps** | A back arrow, the heading *"Allowed apps"*, and the subtitle *"Everything else goes quiet and unopenable until the timer ends."* Below it, every launchable app on the device in a scrolling list — each row the app's real launcher icon (falling back to a tinted initial-letter monogram if it can't be resolved), the app label, its package name underneath, and a pill switch on the right. Your own app is filtered out of the list. |
 | **Locked** | Takes over the whole app the moment a session starts, replacing the nav graph entirely rather than being pushed onto it. Near-black (`#131110`) with cream text: a small padlock and `SCREEN LOCKED` label up top, an enormous `MM:SS` countdown in the display face, the row of allowed apps as a dock, and a **hold-to-confirm** button at the bottom that requires a sustained ~1.2s press before it even offers the confirmation sheet. |
 | **Blocked** | The one you see *outside* the app. Same near-black treatment as Locked, so it reads as the same surface following you around. Shows the blocked app's first initial in a circle, its name, the remaining countdown, your allowed-app dock as an escape route, a **Back to focus** button, and the same hold-to-end control. The Back key is swallowed; it does not dismiss. |
-| **Settings** | Back arrow, heading, a summary line, then four labelled toggle rows: *Full-screen lock*, *Long-press to break out*, *Chime at finish*, and *Keep the clock visible*. |
+| **Settings** | Two labelled groups. **Defaults** reads back your current session length, the short-break length, and how many apps are on the allowlist. **The Lock** is four toggle rows — *Full-screen lock*, *Long-press to break out*, *Chime at finish*, *Keep the clock visible* — each with a one-line explanation underneath. A footer note states plainly that the screen is held with an Accessibility service. |
 
-<!-- Screenshots: drop PNGs in docs/screenshots/ and swap this comment for the table below.
-| Home | Allowed apps | Locked | Blocked |
-|---|---|---|---|
-| ![Home](docs/screenshots/home.png) | ![Allowlist](docs/screenshots/allowlist.png) | ![Locked](docs/screenshots/locked.png) | ![Blocked](docs/screenshots/blocked.png) |
--->
+*Allowed apps and Blocked aren't pictured above — drop `allowlist.jpg` / `blocked.jpg` into
+`docs/screenshots/` and add two more columns when you grab them.*
 
 ### The look
 
