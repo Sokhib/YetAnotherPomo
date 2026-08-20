@@ -1,0 +1,34 @@
+# Build output
+/build
+**/build/
+/captures
+.externalNativeBuild
+.cxx
+
+# Gradle / Kotlin local state
+.gradle
+.kotlin/
+
+# Local machine config — contains absolute SDK paths (and your username)
+local.properties
+
+# IDE. Ignored wholesale: workspace.xml and friends carry absolute paths,
+# AVD names and per-developer JDK pins that don't belong in a shared repo.
+/.idea/
+*.iml
+
+# Signing material — never commit these
+*.jks
+*.keystore
+*.p12
+*.pfx
+keystore.properties
+signing.properties
+
+# Service config that commonly carries API keys
+google-services.json
+.env
+.env.*
+
+# macOS
+.DS_Store

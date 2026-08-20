@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Focus Lock</string>
+    <string name="accessibility_service_label">Focus Lock session blocking</string>
+    <string name="accessibility_service_description">Lets Focus Lock detect when a non-allowed app is opened during a session and show the block screen. Focus Lock does not read any screen content.</string>
+</resources>

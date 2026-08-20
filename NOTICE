@@ -1,0 +1,26 @@
+Focus Lock
+Copyright 2026 the Focus Lock authors
+
+This product bundles third-party font software, licensed as follows.
+
+
+-------------------------------------------------------------------------------
+Figtree  --  app/src/main/res/font/figtree_regular.ttf
+                                   figtree_medium.ttf
+                                   figtree_semibold.ttf
+-------------------------------------------------------------------------------
+Copyright 2022 The Figtree Project Authors
+(https://github.com/erikdkennedy/figtree)
+
+Licensed under the SIL Open Font License, Version 1.1.
+Full license text: licenses/OFL-Figtree.txt
+
+
+-------------------------------------------------------------------------------
+Caprasimo  --  app/src/main/res/font/caprasimo_regular.ttf
+-------------------------------------------------------------------------------
+Copyright 2023 The Caprasimo Project Authors
+(https://github.com/docrepair-fonts/caprasimo-fonts).
+
+Licensed under the SIL Open Font License, Version 1.1.
+Full license text: licenses/OFL-Caprasimo.txt
