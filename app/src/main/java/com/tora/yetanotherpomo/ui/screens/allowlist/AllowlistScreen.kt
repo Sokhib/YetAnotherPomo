@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,14 @@ fun AllowlistScreen(
     val colors = Organic.colors
     val type = Organic.type
 
+    // Allowed apps float to the top. `partition` is stable, so each group keeps the alphabetical
+    // order the repository already sorted into, and the derived list is only rebuilt when the
+    // inputs actually change rather than on every recomposition.
+    val orderedApps = remember(installedApps, allowedPackages) {
+        val (allowed, rest) = installedApps.partition { it.packageName in allowedPackages }
+        allowed + rest
+    }
+
     Column(modifier = modifier.fillMaxSize().background(colors.bg)) {
         Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
             IconButton(onClick = onBack) {
@@ -50,7 +59,7 @@ fun AllowlistScreen(
             )
         }
         LazyColumn(modifier = Modifier.weight(1f).padding(horizontal = Organic.size.listGutter)) {
-            itemsIndexed(installedApps, key = { _, app -> app.packageName }) { index, app ->
+            itemsIndexed(orderedApps, key = { _, app -> app.packageName }) { index, app ->
                 val (bg, fg) = appAvatarTone(index)
                 AppRow(
                     label = app.label,
@@ -60,6 +69,7 @@ fun AllowlistScreen(
                     toneFg = fg,
                     checked = app.packageName in allowedPackages,
                     onToggle = { onToggleApp(app.packageName) },
+                    modifier = Modifier.animateItem(),
                 )
             }
         }

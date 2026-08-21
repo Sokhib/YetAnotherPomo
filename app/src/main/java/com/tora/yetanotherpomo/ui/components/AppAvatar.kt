@@ -1,25 +1,18 @@
 package com.tora.yetanotherpomo.ui.components
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
 import com.tora.yetanotherpomo.ui.theme.CaprasimoFamily
 import com.tora.yetanotherpomo.ui.theme.Organic
 
@@ -37,7 +30,8 @@ fun appAvatarTone(index: Int): Pair<Color, Color> {
 /**
  * A circular avatar for an installed app: the real launcher icon when it can be resolved,
  * otherwise an initial-letter placeholder on the given tone (the doc's own fallback treatment
- * for its mock app tiles).
+ * for its mock app tiles). The icon is loaded off the main thread by [rememberAppIcon], so the
+ * placeholder is also what a row shows for the frame or two before its icon arrives.
  */
 @Composable
 fun AppAvatar(
@@ -48,12 +42,7 @@ fun AppAvatar(
     toneFg: Color,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val icon = remember(packageName) {
-        runCatching { context.packageManager.getApplicationIcon(packageName) }
-            .getOrNull()
-            ?.let { drawableToImageBitmap(it, 96) }
-    }
+    val icon = rememberAppIcon(packageName)
 
     Box(
         modifier = modifier
@@ -77,13 +66,4 @@ fun AppAvatar(
             )
         }
     }
-}
-
-private fun drawableToImageBitmap(drawable: Drawable, sizePx: Int): androidx.compose.ui.graphics.ImageBitmap? {
-    if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) return null
-    val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    drawable.setBounds(0, 0, sizePx, sizePx)
-    drawable.draw(canvas)
-    return bitmap.asImageBitmap()
 }
