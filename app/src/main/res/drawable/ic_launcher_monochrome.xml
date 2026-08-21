@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Focus Lock mark: sage elapsed arc + terracotta dial with the keyhole knocked out.
-     Scaled 0.9 about centre so the arc clears every adaptive-icon mask. -->
+<!-- Android 13+ themed icons. Single colour, keyhole still knocked out. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -9,12 +8,12 @@
     <group android:translateX="5.4" android:translateY="5.4" android:scaleX="0.9" android:scaleY="0.9">
         <path
             android:pathData="M54,22A32,32 0 0 1 67.524,83.002"
-            android:strokeColor="#7A8A5E"
+            android:strokeColor="#000000"
             android:strokeWidth="7"
             android:strokeLineCap="round"/>
         <path
             android:fillType="evenOdd"
-            android:fillColor="#C67139"
+            android:fillColor="#000000"
             android:pathData="M54,31.5A22.5,22.5 0 1 1 54,76.5A22.5,22.5 0 1 1 54,31.5ZM51.909,57.298L55.66,65.343A3.3,3.3 0 0 0 61.642,62.553L57.891,54.508A7.4,7.4 0 1 0 51.909,57.298Z"/>
     </group>
 </vector>

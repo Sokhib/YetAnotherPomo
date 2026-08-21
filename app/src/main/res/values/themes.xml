@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.YetAnotherPomo" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.YetAnotherPomo" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Brand ground, so the window behind Compose matches the app's own background
+             instead of flashing the platform's white. -->
+        <item name="android:windowBackground">@color/brand_ground</item>
+    </style>
 </resources>
