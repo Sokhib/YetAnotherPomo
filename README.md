@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" width="96" alt="">
+<img src="docs/brand/focus-lock-mark.png" width="96" alt="Focus Lock — a keyhole cut out of a terracotta dial, traced by a sage arc">
 
 # Focus Lock
 
@@ -92,6 +92,10 @@ app/
 design-system/     the "Organic" design language as plain Kotlin
                    — colour, type, spacing, motion tokens with
                      no Android or Compose dependency
+
+docs/brand/        the app mark, as an SVG master and a 512 PNG.
+                   The launcher, splash and notification drawables
+                   it was cut into live in app/src/main/res
 ```
 
 Two modules. `:design-system` holds the design language on its own, with no dependency on Android
