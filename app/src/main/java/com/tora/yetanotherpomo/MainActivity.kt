@@ -10,18 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tora.yetanotherpomo.ui.FocusViewModel
 import com.tora.yetanotherpomo.ui.navigation.FocusApp
 import com.tora.yetanotherpomo.ui.theme.OrganicTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val container = (application as FocusLockApplication).container
-            val viewModel: FocusViewModel = viewModel(factory = FocusViewModel.factory(container))
+            val viewModel: FocusViewModel = koinViewModel()
 
             // Re-check accessibility status on every resume - returning from
             // Settings.ACTION_ACCESSIBILITY_SETTINGS naturally triggers ON_RESUME.

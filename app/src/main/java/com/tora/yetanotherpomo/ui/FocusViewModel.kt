@@ -3,9 +3,6 @@ package com.tora.yetanotherpomo.ui
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.tora.yetanotherpomo.di.AppContainer
 import com.tora.yetanotherpomo.domain.model.FocusSwitches
 import com.tora.yetanotherpomo.domain.repository.AccessibilityStatusChecker
 import com.tora.yetanotherpomo.domain.repository.FocusRepository
@@ -91,17 +88,5 @@ class FocusViewModel(
 
     fun refreshAccessibilityStatus() {
         accessibilityGranted.value = accessibilityStatusChecker.isServiceEnabled()
-    }
-
-    companion object {
-        fun factory(container: AppContainer) = viewModelFactory {
-            initializer {
-                FocusViewModel(
-                    repository = container.focusRepository,
-                    installedAppsRepository = container.installedAppsRepository,
-                    accessibilityStatusChecker = container.accessibilityStatusChecker,
-                )
-            }
-        }
     }
 }

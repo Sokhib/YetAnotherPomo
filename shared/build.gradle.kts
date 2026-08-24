@@ -59,6 +59,9 @@ kotlin {
             api(libs.androidx.datastore.preferences.core)
             // DataStore's multiplatform file API speaks okio.Path rather than java.io.File.
             implementation(libs.okio)
+            // `api` so :app and the iOS framework can both declare their own Koin modules
+            // against the same Koin runtime.
+            api(libs.koin.core)
         }
 
         commonTest.dependencies {
@@ -71,6 +74,8 @@ kotlin {
             // Android-only DataStore artifact, pulled in for exactly one function:
             // Context.preferencesDataStoreFile(). See FocusDataStore.android.kt for why.
             implementation(libs.androidx.datastore.preferences)
+            // Only for androidContext() - the Android module needs a Context to locate filesDir.
+            implementation(libs.koin.android)
         }
     }
 }

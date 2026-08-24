@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.getKoin
 
 /** How often the overlay's countdown is re-read, and how often session expiry is re-checked. */
 private const val TICK_MS = 1000L
@@ -105,8 +106,10 @@ class FocusAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        val container = (application as FocusLockApplication).container
-        repository = container.focusRepository
+        // Koin was started in FocusLockApplication.onCreate, which the platform guarantees runs
+        // before any Service - so this resolves the very same FocusRepository (and DataStore)
+        // the UI side uses.
+        repository = getKoin().get()
         overlayController = OverlayController(this)
         policy = SystemPackagePolicy.compute(this)
 
