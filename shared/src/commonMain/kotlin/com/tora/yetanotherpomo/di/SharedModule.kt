@@ -32,9 +32,15 @@ expect fun platformModule(): Module
  * in without commonMain ever having to know what a Context is.
  */
 fun initKoin(
-    extraModules: List<Module> = emptyList(),
-    appDeclaration: KoinApplication.() -> Unit = {},
+    extraModules: List<Module>,
+    appDeclaration: KoinApplication.() -> Unit,
 ): KoinApplication = startKoin {
     appDeclaration()
     modules(sharedModule, platformModule(), *extraModules.toTypedArray())
 }
+
+/**
+ * No-argument overload, for Swift. Kotlin default arguments are not exported to Objective-C, so
+ * without this iOS would have to spell out `doInitKoin(extraModules: [], appDeclaration: { _ in })`.
+ */
+fun initKoin(): KoinApplication = initKoin(emptyList()) {}

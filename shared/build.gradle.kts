@@ -7,6 +7,10 @@ plugins {
     // NOT `com.android.library`. This variant knows how to slot an Android target INTO the
     // `kotlin { }` block rather than owning a top-level `android { }` block of its own.
     alias(libs.plugins.android.kotlin.multiplatform.library)
+    // Generates Swift-friendly wrappers for suspend functions and Flows. Without it, the
+    // Objective-C header exports StateFlow<FocusUiState> as an untyped StateFlow that Swift
+    // cannot collect at all.
+    alias(libs.plugins.kmp.native.coroutines)
 }
 
 kotlin {
@@ -65,12 +69,21 @@ kotlin {
             // FocusViewModel extends androidx's ViewModel in COMMON code - the artifact has
             // shipped iOS targets since 2.8, so no third-party ViewModel library is needed.
             api(libs.androidx.lifecycle.viewmodel)
+            // A ViewModel usable from common code that SwiftUI can treat as an ObservableObject.
+            // On Android it still subclasses androidx's ViewModel, so nothing there changes.
+            api(libs.kmp.observable.viewmodel)
         }
 
         commonTest.dependencies {
             // The multiplatform test framework. `kotlin("test")` resolves to JUnit on Android and
             // to Kotlin/Native's own test runner on iOS - one test file, run on every target.
             implementation(kotlin("test"))
+        }
+
+        // Required by KMP-ObservableViewModel.
+        all {
+            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
+            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         }
 
         androidMain.dependencies {

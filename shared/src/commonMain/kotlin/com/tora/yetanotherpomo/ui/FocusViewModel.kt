@@ -1,7 +1,9 @@
 package com.tora.yetanotherpomo.ui
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.stateIn
+import com.rickclephas.kmp.observableviewmodel.launch
 import com.tora.yetanotherpomo.domain.model.FocusSwitches
 import com.tora.yetanotherpomo.domain.repository.AccessibilityStatusChecker
 import com.tora.yetanotherpomo.domain.repository.FocusRepository
@@ -40,6 +42,10 @@ class FocusViewModel(
         }
     }
 
+    // Generates a typed Swift property backed by this flow's current value, so SwiftUI reads
+    // `viewModel.uiState.remainingSeconds` directly. Without it the ObjC header exports an
+    // untyped StateFlow that Swift cannot collect.
+    @NativeCoroutinesState
     val uiState: StateFlow<FocusUiState> = combine(
         combine(repository.sessionFlow, repository.allowedFlow, repository.switchesFlow) { session, allowed, switches ->
             Triple(session, allowed, switches)

@@ -36,3 +36,7 @@ google-services.json
 # Reference clone of the JetBrains KMP template. Has its own .git; kept locally as a
 # reference during the KMP migration, deleted once the port is done.
 /KMP-App-Template-Native/
+
+# Xcode per-developer state
+xcuserdata/
+*.xcuserstate
