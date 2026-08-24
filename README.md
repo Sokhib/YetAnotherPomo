@@ -71,7 +71,7 @@ No account, no setup, no internet. Nothing leaves the device.
 ## Getting started
 
 ```bash
-./gradlew :app:installDebug
+./gradlew :androidApp:installDebug
 ```
 
 Then enable the service once under **Settings → Accessibility → Focus Lock**, or tap **Grant
@@ -82,10 +82,15 @@ access** on the in-app banner, which takes you straight there.
 ## Project layout
 
 ```
-app/
-├── di/            manual singletons, built once at startup
-├── domain/        models and repository interfaces
-├── data/          storage, installed-app lookup
+shared/            Kotlin Multiplatform — Android + iOS
+├── commonMain/    domain models, repository contracts, DataStore,
+│                  the Koin graph and FocusViewModel
+├── androidMain/   SystemClock, filesDir, androidContext()
+└── iosMain/       CLOCK_MONOTONIC, NSFileManager, KoinDependencies
+
+androidApp/        the Android app
+├── di/            the Android-only half of the Koin graph
+├── data/          installed-app lookup, accessibility status
 ├── service/       the blocker and its full-screen overlay
 └── ui/            screens, components, theme
 

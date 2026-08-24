@@ -1,28 +1,33 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
 }
 
-// Intentionally a plain Kotlin/JVM library: no Android Gradle plugin, no `android {}` block,
-// no resources and no dependencies. The token set describes the Organic design language in
-// toolkit-free primitives so it can be dropped into any consumer (Compose, View system,
-// desktop, a screenshot tool) by writing a small binding layer against it.
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
+// Still intentionally dependency-free: no Compose, no Android APIs, no third-party libraries. It
+// only changed shape - what was a plain Kotlin/JVM jar is now a multiplatform module, because a
+// JVM jar cannot be consumed by Kotlin/Native. The token set is unchanged; the point was always
+// that a consumer binds it to its own toolkit, and now iOS can be one of those consumers.
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
+    android {
+        namespace = "com.tora.organic"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+
+        withHostTest {}
     }
-}
 
-dependencies {
-    testImplementation(libs.junit)
-}
+    iosArm64()
+    iosSimulatorArm64()
 
-tasks.withType<Test>().configureEach {
-    useJUnit()
+    sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+    }
 }

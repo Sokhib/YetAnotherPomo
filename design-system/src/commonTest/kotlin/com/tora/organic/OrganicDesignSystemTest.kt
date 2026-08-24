@@ -3,9 +3,9 @@ package com.tora.organic
 import com.tora.organic.tokens.ColorToken
 import com.tora.organic.tokens.FontFamilyToken
 import com.tora.organic.tokens.FontWeightToken
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ColorTokenTest {
 

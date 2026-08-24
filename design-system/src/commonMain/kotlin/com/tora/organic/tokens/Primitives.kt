@@ -1,5 +1,10 @@
 package com.tora.organic.tokens
 
+// commonMain does not auto-import kotlin.jvm.*, so @JvmInline needs spelling out. The
+// annotation itself is multiplatform: on Kotlin/Native value classes are already
+// unboxed, and it simply carries no extra meaning there.
+import kotlin.jvm.JvmInline
+
 /**
  * The primitive value types every other token is built from.
  *
