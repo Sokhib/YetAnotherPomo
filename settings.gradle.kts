@@ -24,5 +24,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "YetAnotherPomo"
 include(":app")
+include(":shared")
 include(":design-system")
  
