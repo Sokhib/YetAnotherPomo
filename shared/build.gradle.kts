@@ -43,4 +43,13 @@ kotlin {
             isStatic = true
         }
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            // Flow/StateFlow/coroutines are multiplatform, so FocusRepository's `Flow<...>`
+            // signatures compile unchanged for Android AND iOS. This is the whole reason the
+            // domain layer ports for free.
+            api(libs.kotlinx.coroutines.core)
+        }
+    }
 }

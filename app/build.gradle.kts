@@ -36,6 +36,9 @@ android {
 }
 
 dependencies {
+    // The multiplatform module: domain models and repository contracts, shared with iOS.
+    implementation(project(":shared"))
+
     // Platform-free design tokens. The Compose binding for them lives in ui/theme.
     implementation(project(":design-system"))
 

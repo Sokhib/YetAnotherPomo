@@ -6,8 +6,8 @@ package com.tora.yetanotherpomo.domain.model
  * the AccessibilityService, which each read this independently, can never disagree about whether
  * a session is active.
  *
- * @param nowElapsedRealtimeMs the caller's current [android.os.SystemClock.elapsedRealtime]
- * reading, passed in rather than read internally so this stays a pure, testable data class.
+ * @param nowElapsedRealtimeMs the caller's current monotonic-clock reading, passed in rather
+ * than read internally so this stays a pure, testable data class that commonMain can hold.
  */
 data class FocusSession(
     val minutes: Int,
