@@ -1,6 +1,5 @@
 package com.tora.yetanotherpomo.data.repository
 
-import android.os.SystemClock
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -8,12 +7,16 @@ import com.tora.yetanotherpomo.data.local.FocusPreferencesKeys
 import com.tora.yetanotherpomo.domain.model.FocusSession
 import com.tora.yetanotherpomo.domain.model.FocusSwitches
 import com.tora.yetanotherpomo.domain.repository.FocusRepository
+import com.tora.yetanotherpomo.domain.time.MonotonicClock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 class FocusRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
+    // Injected rather than reached for. A test can pass MonotonicClock { fixedValue } and drive
+    // the countdown by hand; production passes systemMonotonicClock().
+    private val clock: MonotonicClock,
     override val holdToEndMs: Int = FocusPreferencesKeys.DEFAULT_HOLD_TO_END_MS,
     override val dialMaxMinutes: Int = FocusPreferencesKeys.DEFAULT_DIAL_MAX_MINUTES,
 ) : FocusRepository {
@@ -47,7 +50,7 @@ class FocusRepositoryImpl(
     }
 
     override suspend fun startSession(minutes: Int) {
-        val end = SystemClock.elapsedRealtime() + minutes * 60_000L
+        val end = clock.elapsedRealtimeMs() + minutes * 60_000L
         dataStore.edit { prefs ->
             prefs[FocusPreferencesKeys.SESSION_MINUTES] = minutes
             prefs[FocusPreferencesKeys.SESSION_END_ELAPSED_REALTIME_MS] = end

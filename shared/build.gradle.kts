@@ -24,6 +24,10 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
         }
+
+        // Opts the Android target into running commonTest on the local JVM. Without this the
+        // Android side silently skips the shared tests and only iOS would run them.
+        withHostTest {}
     }
 
     // ---- Targets 2 & 3: iOS. -----------------------------------------------------------------
@@ -50,6 +54,23 @@ kotlin {
             // signatures compile unchanged for Android AND iOS. This is the whole reason the
             // domain layer ports for free.
             api(libs.kotlinx.coroutines.core)
+            // `api`, not `implementation`: DataStore<Preferences> appears in FocusRepositoryImpl's
+            // constructor, so anything that constructs one needs the type visible.
+            api(libs.androidx.datastore.preferences.core)
+            // DataStore's multiplatform file API speaks okio.Path rather than java.io.File.
+            implementation(libs.okio)
+        }
+
+        commonTest.dependencies {
+            // The multiplatform test framework. `kotlin("test")` resolves to JUnit on Android and
+            // to Kotlin/Native's own test runner on iOS - one test file, run on every target.
+            implementation(kotlin("test"))
+        }
+
+        androidMain.dependencies {
+            // Android-only DataStore artifact, pulled in for exactly one function:
+            // Context.preferencesDataStoreFile(). See FocusDataStore.android.kt for why.
+            implementation(libs.androidx.datastore.preferences)
         }
     }
 }

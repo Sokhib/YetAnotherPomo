@@ -2,12 +2,13 @@ package com.tora.yetanotherpomo.di
 
 import android.content.Context
 import com.tora.yetanotherpomo.data.apps.InstalledAppsRepositoryImpl
-import com.tora.yetanotherpomo.data.local.buildFocusDataStore
+import com.tora.yetanotherpomo.data.local.createFocusDataStore
 import com.tora.yetanotherpomo.data.repository.AccessibilityStatusCheckerImpl
 import com.tora.yetanotherpomo.data.repository.FocusRepositoryImpl
 import com.tora.yetanotherpomo.domain.repository.AccessibilityStatusChecker
 import com.tora.yetanotherpomo.domain.repository.FocusRepository
 import com.tora.yetanotherpomo.domain.repository.InstalledAppsRepository
+import com.tora.yetanotherpomo.domain.time.systemMonotonicClock
 
 /**
  * Manual dependency container (no Hilt/KSP, to keep build risk low). Built once in
@@ -20,7 +21,10 @@ class AppContainer(context: Context) {
     private val appContext = context.applicationContext
 
     val focusRepository: FocusRepository by lazy {
-        FocusRepositoryImpl(dataStore = buildFocusDataStore(appContext))
+        FocusRepositoryImpl(
+            dataStore = createFocusDataStore(appContext),
+            clock = systemMonotonicClock(),
+        )
     }
 
     val installedAppsRepository: InstalledAppsRepository by lazy {
