@@ -4,6 +4,7 @@ import com.tora.yetanotherpomo.data.apps.InstalledAppsRepositoryImpl
 import com.tora.yetanotherpomo.data.repository.AccessibilityStatusCheckerImpl
 import com.tora.yetanotherpomo.domain.repository.AccessibilityStatusChecker
 import com.tora.yetanotherpomo.domain.repository.InstalledAppsRepository
+import com.tora.yetanotherpomo.domain.time.systemMonotonicClock
 import com.tora.yetanotherpomo.ui.FocusViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -20,5 +21,5 @@ val androidModule = module {
 
     // Koin builds the ViewModel and hands it to androidx's ViewModelStore, replacing the
     // hand-written ViewModelProvider.Factory. Moves to :shared in step 6.
-    viewModel { FocusViewModel(get(), get(), get()) }
+    viewModel { FocusViewModel(get(), get(), get(), systemMonotonicClock()) }
 }

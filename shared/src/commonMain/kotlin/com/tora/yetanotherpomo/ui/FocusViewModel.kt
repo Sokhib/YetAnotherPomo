@@ -1,12 +1,12 @@
 package com.tora.yetanotherpomo.ui
 
-import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tora.yetanotherpomo.domain.model.FocusSwitches
 import com.tora.yetanotherpomo.domain.repository.AccessibilityStatusChecker
 import com.tora.yetanotherpomo.domain.repository.FocusRepository
 import com.tora.yetanotherpomo.domain.repository.InstalledAppsRepository
+import com.tora.yetanotherpomo.domain.time.MonotonicClock
 import com.tora.yetanotherpomo.domain.model.InstalledApp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,13 +20,14 @@ import kotlinx.coroutines.launch
 /**
  * The single shared ViewModel for all four in-app screens (Home/Allowlist/Locked/Settings).
  * Combines the repository's three flows with a 1s ticker into one [uiState] - the ticker derives
- * remaining time from [SystemClock.elapsedRealtime] each tick rather than naively decrementing,
- * so backgrounding never causes drift.
+ * remaining time from the [MonotonicClock] each tick rather than naively decrementing, so
+ * backgrounding never causes drift.
  */
 class FocusViewModel(
     private val repository: FocusRepository,
     private val installedAppsRepository: InstalledAppsRepository,
     private val accessibilityStatusChecker: AccessibilityStatusChecker,
+    private val clock: MonotonicClock,
 ) : ViewModel() {
 
     private val installedApps = MutableStateFlow<List<InstalledApp>>(emptyList())
@@ -34,7 +35,7 @@ class FocusViewModel(
 
     private val ticker = flow {
         while (true) {
-            emit(SystemClock.elapsedRealtime())
+            emit(clock.elapsedRealtimeMs())
             delay(1000)
         }
     }

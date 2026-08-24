@@ -62,6 +62,9 @@ kotlin {
             // `api` so :app and the iOS framework can both declare their own Koin modules
             // against the same Koin runtime.
             api(libs.koin.core)
+            // FocusViewModel extends androidx's ViewModel in COMMON code - the artifact has
+            // shipped iOS targets since 2.8, so no third-party ViewModel library is needed.
+            api(libs.androidx.lifecycle.viewmodel)
         }
 
         commonTest.dependencies {
