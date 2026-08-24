@@ -49,6 +49,12 @@ kotlin {
             // Static = linked into the app binary. Simpler than a dynamic framework; no
             // "embed and sign" build phase to get wrong.
             isStatic = true
+
+            // By default a framework exports only THIS module's public API; types from
+            // dependencies are compiled in but stay invisible to Swift. `api(...)` in the
+            // dependency block is necessary but not sufficient - the dependency must also be
+            // named here for its declarations to reach the generated header.
+            export(projects.designSystem)
         }
     }
 
@@ -72,6 +78,9 @@ kotlin {
             // A ViewModel usable from common code that SwiftUI can treat as an ObservableObject.
             // On Android it still subclasses androidx's ViewModel, so nothing there changes.
             api(libs.kmp.observable.viewmodel)
+            // `api` so the design tokens land in Shared.framework and Swift can bind them,
+            // the same way androidApp's ui/theme binds them to Compose.
+            api(projects.designSystem)
         }
 
         commonTest.dependencies {

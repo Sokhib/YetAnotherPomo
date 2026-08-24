@@ -2,51 +2,122 @@ import SwiftUI
 import KMPObservableViewModelSwiftUI
 import Shared
 
-/// Deliberately unstyled. The point of this screen is to prove one thing end to end: the
-/// countdown you are watching is produced by the same Kotlin `FocusViewModel` the Android app
-/// uses - same repository, same DataStore, same 1s ticker - with no timer logic written in Swift.
+private let presets: [Int32] = [15, 25, 50]
+
+/// The iOS Home screen, built from the same Organic tokens the Compose Home screen uses.
+///
+/// Two deliberate differences from `HomeScreen.kt`, both consequences of the platform rather than
+/// of taste: there is no accessibility banner and no allowlist dock, because iOS can neither
+/// enumerate installed apps nor block them. Everything else - the dial, the presets, the Begin
+/// pill, the type scale and the palette - is the same design language driven by the same
+/// `FocusViewModel`.
 struct FocusView: View {
-    /// `@StateViewModel` is KMP-ObservableViewModel's counterpart to `@StateObject`: it owns the
-    /// ViewModel and re-renders this view whenever an @NativeCoroutinesState property changes.
     @StateViewModel
     var viewModel = makeFocusViewModel()
 
+    @State private var confirmingEnd = false
+
     var body: some View {
-        // `viewModel.uiState` is a plain FocusUiState, NOT a StateFlow. That typed property is
-        // what @NativeCoroutinesState generated for us.
+        // `viewModel.uiState` is a plain FocusUiState, NOT a StateFlow - that typed property is
+        // what @NativeCoroutinesState generated.
         let state = viewModel.uiState
 
-        VStack(spacing: 32) {
-            Text("Focus Lock")
-                .font(.largeTitle.bold())
+        ZStack {
+            Organic.colors.bgColor.ignoresSafeArea()
 
-            Text(format(seconds: Int(state.remainingSeconds)))
-                .font(.system(size: 64, weight: .semibold, design: .rounded))
-                .monospacedDigit()
+            VStack(spacing: 0) {
+                header
 
-            Text(state.isRunning ? "Focusing" : "\(state.minutes) minutes")
-                .foregroundStyle(.secondary)
+                Spacer(minLength: 0)
 
-            if !state.isRunning {
-                Stepper(
-                    "Duration: \(state.minutes) min",
-                    onIncrement: { viewModel.setMinutes(minutes: state.minutes + 5) },
-                    onDecrement: { viewModel.setMinutes(minutes: state.minutes - 5) }
-                )
-                .padding(.horizontal, 48)
-            }
-
-            Button(state.isRunning ? "End session" : "Begin") {
                 if state.isRunning {
-                    viewModel.endSessionEarly()
+                    countdown(state: state)
                 } else {
-                    viewModel.beginSession()
+                    dial(state: state)
+                }
+
+                Spacer(minLength: 0)
+
+                PillButton(
+                    text: state.isRunning ? "Hold to end" : "Begin \(state.minutes) minutes",
+                    action: { if !state.isRunning { viewModel.beginSession() } },
+                    fullWidth: true,
+                    enabled: !state.isRunning
+                )
+                .opacity(state.isRunning ? 0 : 1)
+                .overlay {
+                    if state.isRunning {
+                        HoldToConfirmButton(
+                            text: "Hold to end",
+                            holdDurationMs: state.holdToEndMs,
+                            onHoldComplete: { confirmingEnd = true },
+                            borderColor: Organic.colors.dividerColor,
+                            fillColor: Organic.colors.accentRamp.color200,
+                            contentColor: Organic.colors.neutral.color700
+                        )
+                    }
                 }
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 22)
+
+            if confirmingEnd {
+                ConfirmEndSheet(
+                    bodyText: "You still have \(format(seconds: Int(state.remainingSeconds))) left on this session.",
+                    onKeepFocusing: { confirmingEnd = false },
+                    onEndSession: {
+                        confirmingEnd = false
+                        viewModel.endSessionEarly()
+                    }
+                )
+            }
         }
-        .padding()
+        .animation(.easeInOut(duration: Organic.motion.standard.seconds), value: confirmingEnd)
+    }
+
+    private var header: some View {
+        HStack {
+            Text("Focus Lock")
+                .organicText(Organic.type.heading3)
+                .foregroundStyle(Organic.colors.textColor)
+            Spacer()
+        }
+    }
+
+    private func dial(state: FocusUiState) -> some View {
+        VStack(spacing: 30) {
+            CircularDial(
+                minutes: Int(state.minutes),
+                maxMinutes: Int(state.dialMaxMinutes),
+                onMinutesChange: { viewModel.setMinutes(minutes: Int32($0)) }
+            )
+
+            HStack(spacing: 9) {
+                ForEach(presets, id: \.self) { preset in
+                    let selected = preset == state.minutes
+                    PillButton(
+                        text: "\(preset) min",
+                        action: { viewModel.setMinutes(minutes: preset) },
+                        variant: selected ? .primary : .secondary,
+                        containerColor: selected ? Organic.colors.accentRamp.color200 : .clear,
+                        contentColor: selected ? Organic.colors.accentRamp.color800 : Organic.colors.neutral.color700,
+                        borderColor: selected ? Organic.colors.accentRamp.color300 : Organic.colors.dividerColor
+                    )
+                }
+            }
+        }
+    }
+
+    private func countdown(state: FocusUiState) -> some View {
+        VStack(spacing: 8) {
+            Text(format(seconds: Int(state.remainingSeconds)))
+                .organicText(Organic.type.clockDigits)
+                .foregroundStyle(Organic.colors.textColor)
+                .monospacedDigit()
+            Text("REMAINING")
+                .organicText(Organic.type.labelSmall)
+                .foregroundStyle(Organic.colors.neutral.color600)
+        }
     }
 
     private func format(seconds: Int) -> String {

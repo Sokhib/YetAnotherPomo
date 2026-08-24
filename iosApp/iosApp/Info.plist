@@ -46,5 +46,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Fonts/caprasimo_regular.ttf</string>
+		<string>Fonts/figtree_regular.ttf</string>
+		<string>Fonts/figtree_medium.ttf</string>
+		<string>Fonts/figtree_semibold.ttf</string>
+	</array>
 </dict>
 </plist>
