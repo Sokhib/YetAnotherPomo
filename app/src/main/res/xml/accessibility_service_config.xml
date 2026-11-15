@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    canRetrieveWindowContent + flagRetrieveInteractiveWindows: Night lock tells the Settings pages
+    that could switch it off (Accessibility, App info, Developer options...) apart by their text.
+    Content is read only for Settings and the package installer, and only while Night lock runs;
+    the service adds the content-change event types it needs for that at runtime.
+-->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeWindowStateChanged"
     android:accessibilityFeedbackType="feedbackGeneric"
-    android:canRetrieveWindowContent="false"
+    android:accessibilityFlags="flagRetrieveInteractiveWindows"
+    android:canRetrieveWindowContent="true"
     android:notificationTimeout="0"
     android:description="@string/accessibility_service_description"
     android:settingsActivity="com.tora.yetanotherpomo.MainActivity" />

@@ -7,6 +7,7 @@ import android.content.pm.ResolveInfo
 import android.os.Build
 import com.tora.yetanotherpomo.domain.model.InstalledApp
 import com.tora.yetanotherpomo.domain.repository.InstalledAppsRepository
+import com.tora.yetanotherpomo.service.SystemPackagePolicy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -37,5 +38,9 @@ class InstalledAppsRepositoryImpl(
             }
             .sortedBy { it.label.lowercase() }
             .toList()
+    }
+
+    override suspend fun getAlwaysReachablePackages(): Set<String> = withContext(Dispatchers.Default) {
+        SystemPackagePolicy.compute(context).alwaysAllowed
     }
 }

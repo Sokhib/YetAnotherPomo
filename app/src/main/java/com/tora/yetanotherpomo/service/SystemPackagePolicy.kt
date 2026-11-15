@@ -8,11 +8,14 @@ import android.view.inputmethod.InputMethodManager
 /**
  * How [FocusAccessibilityService] classifies a package that reports itself as foreground.
  *
- * @param alwaysAllowed packages that must remain reachable no matter what, so a strict session
- * can never fully lock the user out of their device: our own app, the default launcher (Home
- * button always escapes), and the Settings app (resolved dynamically for both entry points,
+ * @param alwaysAllowed packages no blocklist or allowlist can block, so neither a focus session
+ * nor Night lock can fully lock the user out of their device: our own app, the default launcher
+ * (Home button always escapes), and the Settings app (resolved dynamically for both entry points,
  * since some OEMs rename the package - hardcoding "com.android.settings" would silently fail on
- * those).
+ * those). During Night lock, [NightGuard] still closes the few Settings pages that could switch
+ * it off; the rest of Settings stays reachable.
+ *
+ * @param home the default launcher, which Night lock's page guard must never touch.
  *
  * @param transparent packages whose windows layer *over* whatever app is really in the
  * foreground rather than replacing it: system UI, every enabled keyboard, and our own overlay.
@@ -25,8 +28,11 @@ import android.view.inputmethod.InputMethodManager
 data class SystemPackagePolicy(
     val alwaysAllowed: Set<String>,
     val transparent: Set<String>,
+    val home: Set<String>,
 ) {
     companion object {
+        val Empty = SystemPackagePolicy(alwaysAllowed = emptySet(), transparent = emptySet(), home = emptySet())
+
         /**
          * System UI is hardcoded as the one deliberate exception to dynamic resolution: it has
          * no launchable intent to resolve by, but is AOSP-stable across virtually all shipping
@@ -49,17 +55,17 @@ data class SystemPackagePolicy(
                 imm.enabledInputMethodList.forEach { add(it.packageName) }
             }
 
+            val homeIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+            val home = setOfNotNull(pm.resolveActivity(homeIntent, 0)?.activityInfo?.packageName)
+
             val alwaysAllowed = buildSet {
                 addAll(transparent)
-
-                val homeIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-                pm.resolveActivity(homeIntent, 0)?.activityInfo?.packageName?.let(::add)
-
+                addAll(home)
                 Intent(Settings.ACTION_SETTINGS).resolveActivity(pm)?.packageName?.let(::add)
                 Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).resolveActivity(pm)?.packageName?.let(::add)
             }
 
-            return SystemPackagePolicy(alwaysAllowed = alwaysAllowed, transparent = transparent)
+            return SystemPackagePolicy(alwaysAllowed = alwaysAllowed, transparent = transparent, home = home)
         }
     }
 }

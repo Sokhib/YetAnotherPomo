@@ -3,14 +3,17 @@ package com.tora.yetanotherpomo.ui.screens.home
 import android.content.Intent
 import android.provider.Settings
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,10 +37,12 @@ private val PRESETS = listOf(15, 25, 50)
 @Composable
 fun HomeScreen(
     uiState: FocusUiState,
+    nightLockUntil: String?,
     onMinutesChange: (Int) -> Unit,
     onBegin: () -> Unit,
     onOpenAllowlist: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenNightLock: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = Organic.colors
@@ -68,6 +73,10 @@ fun HomeScreen(
                 },
                 modifier = Modifier.padding(top = 14.dp),
             )
+        }
+
+        if (nightLockUntil != null) {
+            NightLockChip(untilText = nightLockUntil, onClick = onOpenNightLock, modifier = Modifier.padding(top = 14.dp))
         }
 
         Column(
@@ -131,7 +140,7 @@ private fun AccessibilityBanner(onGrant: () -> Unit, modifier: Modifier = Modifi
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = "Focus Lock needs Accessibility access to block apps during a session.",
+            text = "Focus Lock needs Accessibility access to block apps during a session or Night lock.",
             style = type.bodySmall,
             color = colors.accentRamp.c800,
         )
@@ -141,6 +150,33 @@ private fun AccessibilityBanner(onGrant: () -> Unit, modifier: Modifier = Modifi
             variant = PillButtonVariant.Secondary,
             containerColor = colors.accentRamp.c800,
             contentColor = colors.bg,
+        )
+    }
+}
+
+/** Shown while Night lock runs, so the blocks it causes are never a mystery. */
+@Composable
+private fun NightLockChip(untilText: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = Organic.colors
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(Organic.radius.pill))
+            .background(colors.lockedSurface)
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp, horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Bedtime,
+            contentDescription = null,
+            tint = colors.accentRamp.c400,
+            modifier = Modifier.size(16.dp),
+        )
+        Text(
+            text = "Night lock on until $untilText",
+            style = Organic.type.label,
+            color = colors.lockedOnSurface,
         )
     }
 }

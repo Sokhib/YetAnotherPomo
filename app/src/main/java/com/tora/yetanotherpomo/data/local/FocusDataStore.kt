@@ -38,3 +38,29 @@ object FocusPreferencesKeys {
     const val DEFAULT_HOLD_TO_END_MS = 1200
     const val DEFAULT_DIAL_MAX_MINUTES = 60
 }
+
+/**
+ * Night lock's keys, in the same file as the focus keys because they live in the same single
+ * DataStore instance. A [com.tora.yetanotherpomo.domain.model.Deadline] is three keys (wall,
+ * elapsed, boot count); the pending change and the running lock exist exactly when their wall key
+ * does.
+ */
+object NightLockPreferencesKeys {
+    val ENABLED = booleanPreferencesKey("night_enabled")
+    val START_MINUTE = intPreferencesKey("night_start_minute")
+    val END_MINUTE = intPreferencesKey("night_end_minute")
+    val BLOCKED = stringSetPreferencesKey("night_blocked")
+
+    val PENDING_ENABLED = booleanPreferencesKey("night_pending_enabled")
+    val PENDING_START_MINUTE = intPreferencesKey("night_pending_start_minute")
+    val PENDING_END_MINUTE = intPreferencesKey("night_pending_end_minute")
+    val PENDING_BLOCKED = stringSetPreferencesKey("night_pending_blocked")
+    val PENDING_AT_WALL_MS = longPreferencesKey("night_pending_at_wall_ms")
+    val PENDING_AT_ELAPSED_MS = longPreferencesKey("night_pending_at_elapsed_ms")
+    val PENDING_AT_BOOT = intPreferencesKey("night_pending_at_boot")
+
+    val SESSION_BLOCKED = stringSetPreferencesKey("night_session_blocked")
+    val SESSION_UNTIL_WALL_MS = longPreferencesKey("night_session_until_wall_ms")
+    val SESSION_UNTIL_ELAPSED_MS = longPreferencesKey("night_session_until_elapsed_ms")
+    val SESSION_UNTIL_BOOT = intPreferencesKey("night_session_until_boot")
+}

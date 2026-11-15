@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Focus Lock</string>
     <string name="accessibility_service_label">Focus Lock session blocking</string>
-    <string name="accessibility_service_description">Lets Focus Lock detect when a non-allowed app is opened during a session and show the block screen. Focus Lock does not read any screen content.</string>
+    <string name="accessibility_service_description">Lets Focus Lock see which app is open, so it can show the block screen during a focus session or Night lock. While Night lock runs, it also reads the text of Settings screens to keep the few that could switch it off closed. Nothing is stored or sent anywhere.</string>
+    <string name="night_lock_admin_label">Focus Lock uninstall protection</string>
+    <string name="night_lock_admin_description">Stops Focus Lock from being uninstalled until you switch this off. During Night lock, this page stays closed.</string>
+    <string name="night_lock_admin_disable_warning">Focus Lock can be uninstalled again once this is off, and Night lock can be removed with it.</string>
 </resources>

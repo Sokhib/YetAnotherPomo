@@ -19,6 +19,10 @@ everything else simply won't open until the time is up. Reach for the app you're
 and you get a calm full-screen reminder of how much time is left instead of its feed. Home and
 Settings always stay reachable, so you're never locked out of your own phone.
 
+Turn on **Night lock** and your social media apps go to sleep every night, 22:00 to 07:00 by default.
+That one is meant to be hard to undo: once it starts, nothing in the app or in Settings can stop it
+before morning.
+
 No account, no setup, no internet. Nothing leaves the device.
 
 <br>
@@ -46,9 +50,17 @@ No account, no setup, no internet. Nothing leaves the device.
   rather than lingering in Recents with a preview of what you were avoiding.
 - **Hard to quit by accident.** Ending the whole session early takes a deliberate press-and-hold
   plus a confirmation.
-- **Never locks you out.** Your launcher, Settings and keyboard always keep working.
+- **Never locks you out.** Your launcher, Settings and keyboard always keep working. The one
+  exception is opt-in: while Night lock runs, the few Settings pages that could switch it off stay
+  closed too.
 - **Keeps time honestly.** The countdown survives leaving the app, locking the screen, or the app
   being closed entirely.
+- **Night lock.** A nightly schedule and a blocklist (Instagram, VK, X, Reddit and the other big
+  social apps are preselected). While it runs there's no end button; the Accessibility, App info,
+  Device admin, Developer options and Date & time pages are blocked; winding the clock forward or
+  rebooting doesn't end it early. Edits that make it stricter apply at once, edits that loosen it
+  wait until tonight's lock is over. Optional uninstall protection (device admin) and a battery
+  exemption keep it from being removed or killed.
 
 <br>
 
@@ -62,7 +74,7 @@ No account, no setup, no internet. Nothing leaves the device.
 | State | `ViewModel` + `StateFlow`, Coroutines & Flow |
 | Persistence | DataStore Preferences |
 | DI | Manual — no Hilt, no KSP |
-| Blocking | `AccessibilityService` + accessibility overlay |
+| Blocking | `AccessibilityService` + accessibility overlay; Night lock adds a plain device admin |
 | Build | AGP 9.3.1, Gradle 9.5, version catalog |
 | SDK | min 24 · target 37 · Java 11 |
 
@@ -75,7 +87,16 @@ No account, no setup, no internet. Nothing leaves the device.
 ```
 
 Then enable the service once under **Settings → Accessibility → Focus Lock**, or tap **Grant
-access** on the in-app banner, which takes you straight there.
+access** on the in-app banner, which takes you straight there. On Android 13+ a sideloaded app's
+Accessibility toggle is greyed out until you tap **⋮ → Allow restricted settings** on its App info
+page.
+
+For Night lock, open **Settings → Night lock**, switch it on, and turn on the three rows under
+*Keep it on*: Accessibility, Uninstall protection and Battery. To uninstall Focus Lock later,
+switch Uninstall protection off first (outside the night).
+
+Night lock stops the impulse, not a plan: safe mode, `adb` from a computer, or a factory reset still
+get around it.
 
 <br>
 
@@ -84,9 +105,12 @@ access** on the in-app banner, which takes you straight there.
 ```
 app/
 ├── di/            manual singletons, built once at startup
-├── domain/        models and repository interfaces
-├── data/          storage, installed-app lookup
-├── service/       the blocker and its full-screen overlay
+├── domain/        models and repository interfaces; Night lock's
+│                  schedule rules are pure Kotlin, unit-tested
+├── data/          storage, installed-app lookup, clocks
+├── receiver/      device admin, boot and clock-change re-checks
+├── service/       the blocker, its full-screen overlays, and
+│                  Night lock's Settings page guard
 └── ui/            screens, components, theme
 
 design-system/     the "Organic" design language as plain Kotlin

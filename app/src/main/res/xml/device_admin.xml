@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    No policies: Focus Lock never locks, wipes or restricts the phone. Being an active device admin
+    is enough to make Android refuse to uninstall it until this is switched off.
+-->
+<device-admin>
+    <uses-policies />
+</device-admin>

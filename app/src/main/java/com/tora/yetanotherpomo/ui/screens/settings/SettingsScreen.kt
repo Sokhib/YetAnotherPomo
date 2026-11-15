@@ -1,6 +1,7 @@
 package com.tora.yetanotherpomo.ui.screens.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +30,9 @@ fun SettingsScreen(
     minutes: Int,
     allowedCount: Int,
     switches: FocusSwitches,
+    nightLockSummary: String,
     onToggleSwitch: (update: (FocusSwitches) -> FocusSwitches) -> Unit,
+    onOpenNightLock: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -103,6 +106,16 @@ fun SettingsScreen(
 
             item {
                 Text(
+                    text = "NIGHT LOCK",
+                    style = type.labelSmall,
+                    color = colors.neutral.c600,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 6.dp, top = 22.dp),
+                )
+            }
+            item { SettingsRow(label = "Night lock", value = nightLockSummary, onClick = onOpenNightLock) }
+
+            item {
+                Text(
                     text = "Focus Lock holds the screen with an Accessibility service. Calls from your allowlist always come through.",
                     style = type.bodySmall,
                     color = colors.neutral.c600,
@@ -114,13 +127,14 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsRow(label: String, value: String) {
+private fun SettingsRow(label: String, value: String, onClick: (() -> Unit)? = null) {
     val colors = Organic.colors
     val type = Organic.type
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = Organic.size.minTouchTarget)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(vertical = 14.dp, horizontal = 8.dp),
         horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
