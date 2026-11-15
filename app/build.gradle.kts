@@ -21,6 +21,9 @@ android {
 
     buildTypes {
         release {
+            // Sideloaded personal build: signed with the local debug key so it installs. Keep the
+            // same key for every update, or Android refuses the upgrade.
+            signingConfig = signingConfigs.getByName("debug")
             optimization {
                 enable = false
             }
